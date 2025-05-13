@@ -59,18 +59,36 @@ void Analyze()
             nation = rawRoundData[7],
             tier = int.Parse(rawRoundData[8])
         };
-        if (round.tier == 6 /*&& round.teamSize == null*/)
+        if (round.tier == 6)
             roundList.Add(round);
     }
+    List<Round> filterRoundList = [];
+    foreach (var round in roundList)
+    {
+        if (round.tier == 6 && round.teamSize == 1 && round.date >= DateOnly.ParseExact("2025.5.7", "yyyy.M.d"))
+            filterRoundList.Add(round);
+    }
+
+    getStats(roundList, null, null, out double[] nationWR, out double[] timeWR);
+    getStats(filterRoundList, nationWR, timeWR, out _, out _);
+}
+
+void getStats(List<Round> RoundList, double[]? originNationWR, double[]? originTimeWR, out double[] nationWR, out double[] timeWR)
+{
     int[] nationWin = new int[8]; // all SU DE EN JP US FR NATO
     int[] nationLost = new int[8];
     int[] timeWin = new int[25];  // 0 to 23 and all
     int[] timeLost = new int[25];
-    double[] nationWR = new double[8];
-    double[] timeWR = new double[25];
-    Console.WriteLine("Records parsed. Last match at {0} {1}, {2}", roundList.Last().date, roundList.Last().time, roundList.Last().map);
-    foreach (var round in roundList)
+    nationWR = new double[8];
+    timeWR = new double[25];
+    string format = "+#.00 %;-#.00 %;0.00 %";
+    bool compare = true;
+    if (originNationWR == null)
+        compare = false;
+    Console.WriteLine("Records parsed. Last match at {0} {1}, {2}", RoundList.Last().date, RoundList.Last().time, RoundList.Last().map);
+    foreach (var round in RoundList)
     {
+
         int nation = -1;
         switch (round.map)
         {
@@ -118,7 +136,10 @@ void Analyze()
             case 6: Console.Write("FR\t"); break;
             case 7: Console.Write("NATO\t"); break;
         }
-        Console.WriteLine($"{{0}}\t{nationWin[i]}\t{nationLost[i]}\t{nationWR[i]:P}", nationWin[i] + nationLost[i]);
+        if (compare)
+            Console.WriteLine($"{{0}}\t{nationWin[i]}\t{nationLost[i]}\t{nationWR[i]:P} ({{1}})", nationWin[i] + nationLost[i], (nationWR[i] - originNationWR[i]).ToString(format));
+        else
+            Console.WriteLine($"{{0}}\t{nationWin[i]}\t{nationLost[i]}\t{nationWR[i]:P}", nationWin[i] + nationLost[i]);
     }
 
     Console.Out.WriteLine("\nWR per hours:\nTime\tTotal\tWin\tLost\tWR");
@@ -128,7 +149,10 @@ void Analyze()
         if (timeWin[i] != 0)
             timeWR[i] = (double)timeWin[i] / (timeWin[i] + timeLost[i]);
         Console.Write(i == 24 ? "ALL\t" : $"{i}\t");
-        Console.WriteLine($"{{0}}\t{timeWin[i]}\t{timeLost[i]}\t{timeWR[i]:P}", timeWin[i] + timeLost[i]);
+        if(compare)
+            Console.WriteLine($"{{0}}\t{timeWin[i]}\t{timeLost[i]}\t{timeWR[i]:P} ({{1}})", timeWin[i] + timeLost[i], (timeWR[i] - originTimeWR[i]).ToString(format));
+        else
+            Console.WriteLine($"{{0}}\t{timeWin[i]}\t{timeLost[i]}\t{timeWR[i]:P}", timeWin[i] + timeLost[i]);
     }
     Console.WriteLine("Output done.");
 }
@@ -158,7 +182,7 @@ void Append(string result)
         return;
     }
     bool continuous = true;
-    if (timeDelta.TotalMinutes is >= 40 or <= 0)
+    if (lastRound.date != DateOnly.ParseExact(csvResult[0], "yyyy.M.d") || timeDelta.TotalMinutes is >= 40 or <= 0)
         continuous = false;
     Console.WriteLine("\n Play continuous?（0 for No, 1 for Yes, null for Auto[{0}]):", continuous);
 
@@ -200,7 +224,7 @@ string[] ParseResult(string result)
     string[] output = [time.Date.ToString("yyyy.M.d"), time.DayOfWeek.ToString("D"), time.ToString("H:mm"), map, (win ? 1 : 0).ToString()];
     return output;
 }
-
+ 
 DateTime UnixTimeStampToDateTime(double UNIXTimeStamp)
 {
     return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(UNIXTimeStamp).ToLocalTime();
