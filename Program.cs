@@ -75,7 +75,7 @@ void Analyze()
 
 void getStats(List<Round> RoundList, double[]? originNationWR, double[]? originTimeWR, out double[] nationWR, out double[] timeWR)
 {
-    int[] nationWin = new int[8]; // all SU DE EN JP US FR NATO
+    int[] nationWin = new int[8]; // all SU DE GB JP US FR NATO
     int[] nationLost = new int[8];
     int[] timeWin = new int[25];  // 0 to 23 and all
     int[] timeLost = new int[25];
@@ -94,7 +94,7 @@ void getStats(List<Round> RoundList, double[]? originNationWR, double[]? originT
         {
             case string su when su.Contains("库尔斯克"): nation = 1; break;
             case string de when de.Contains("莫兹多克"): nation = 2; break;
-            case string en when en.Contains("西奈"): nation = 3; break;
+            case string gb when gb.Contains("西奈"): nation = 3; break;
             case string jp when jp.Contains("日本"): nation = 4; break;
             case string us when us.Contains("阿登"): nation = 5; break;
             case string fr when fr.Contains("马奇诺"): nation = 6; break;
@@ -130,7 +130,7 @@ void getStats(List<Round> RoundList, double[]? originNationWR, double[]? originT
             case 0: Console.Write("ALL\t"); break;
             case 1: Console.Write("SU\t"); break;
             case 2: Console.Write("DE\t"); break;
-            case 3: Console.Write("EN\t"); break;
+            case 3: Console.Write("GB\t"); break;
             case 4: Console.Write("JP\t"); break;
             case 5: Console.Write("US\t"); break;
             case 6: Console.Write("FR\t"); break;
