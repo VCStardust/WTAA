@@ -136,10 +136,11 @@ void getStats(List<Round> RoundList, double[]? originNationWR, double[]? originT
             case 6: Console.Write("FR\t"); break;
             case 7: Console.Write("NATO\t"); break;
         }
+        Console.Write($"{{0}}\t{nationWin[i]}\t{nationLost[i]}\t{nationWR[i]:P}", nationWin[i] + nationLost[i]);
         if (compare)
-            Console.WriteLine($"{{0}}\t{nationWin[i]}\t{nationLost[i]}\t{nationWR[i]:P} ({{1}})", nationWin[i] + nationLost[i], (nationWR[i] - originNationWR[i]).ToString(format));
+            Console.WriteLine($" ({{0}})", (nationWR[i] - originNationWR[i]).ToString(format));
         else
-            Console.WriteLine($"{{0}}\t{nationWin[i]}\t{nationLost[i]}\t{nationWR[i]:P}", nationWin[i] + nationLost[i]);
+            Console.WriteLine();
     }
 
     Console.Out.WriteLine("\nWR per hours:\nTime\tTotal\tWin\tLost\tWR");
@@ -149,10 +150,11 @@ void getStats(List<Round> RoundList, double[]? originNationWR, double[]? originT
         if (timeWin[i] != 0)
             timeWR[i] = (double)timeWin[i] / (timeWin[i] + timeLost[i]);
         Console.Write(i == 24 ? "ALL\t" : $"{i}\t");
-        if(compare)
-            Console.WriteLine($"{{0}}\t{timeWin[i]}\t{timeLost[i]}\t{timeWR[i]:P} ({{1}})", timeWin[i] + timeLost[i], (timeWR[i] - originTimeWR[i]).ToString(format));
+        Console.Write($"{{0}}\t{timeWin[i]}\t{timeLost[i]}\t{timeWR[i]:P}", timeWin[i] + timeLost[i]);
+        if (compare)
+            Console.WriteLine($" ({{0}})", (timeWR[i] - originTimeWR[i]).ToString(format));
         else
-            Console.WriteLine($"{{0}}\t{timeWin[i]}\t{timeLost[i]}\t{timeWR[i]:P}", timeWin[i] + timeLost[i]);
+            Console.WriteLine();
     }
     Console.WriteLine("Output done.");
 }
